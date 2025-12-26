@@ -1,7 +1,32 @@
 @import "tailwindcss";
 
 @theme {
-    --color-primary: #050B14;   /* app background */
-    --color-secondary: #E6F1FF; /* default text */
-    --color-accent: #0B1B2B;
+    --color-primary: #84c1ff;  
+    --color-secondary: #202020;
+    --color-accent: #0F172A;  
+    --color-gold: #fcd64f; 
+}
+
+/* Width */
+::-webkit-scrollbar {
+    width: 8px;
+
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: transparent; /* primary background */
+    margin: 12px 0;
+}
+
+/* Thumb */
+::-webkit-scrollbar-thumb {
+    background: #374f66; /* border color */
+    border-radius: 10px;
+    border: 2px solid transparent;
+}
+
+/* Hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #1680ad; /* accent blue */
 }

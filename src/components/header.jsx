@@ -1,10 +1,15 @@
+import { Link } from "react-router-dom";
 
 export default function Header(){
     return(
-        <header className="w-full h-[100px] bg-accent">
-            <img src="/logo.png" className="w-[150px]" alt="Logo" />
-            <h1>i-Computers</h1>
-         
+        <header className="w-full h-[100px] bg-accent flex">
+            <img src="/logo.png" className="h-full" alt="Logo" />
+            <div className="w-full h-full flex text-primary justify-center items-center gap-10 text-xl">
+                <Link to="/">Home</Link>
+                <Link to="/products">Products</Link>
+                <Link to="/about">About</Link>
+                <Link to="/contact">Contact</Link>
+            </div>
         </header>
     )
 }
