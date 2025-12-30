@@ -2,95 +2,166 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { BiPlus } from "react-icons/bi";
-import { PiPlus } from "react-icons/pi";
+import { FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import Loader from "../../components/loader";
 
 export default function AdminProductPage() {
    const [products, setProducts] = useState([]);
+   const [loaded, setLoaded] = useState(false);
 
    useEffect(() => {
-      const token = localStorage.getItem("token");
-      axios
-         .get(import.meta.env.VITE_BACKEND_URL + "/products/", {
-            headers: {
-               Authorization: "Bearer " + token,
-            },
-         })
-         .then((response) => {
+      if (!loaded) {
+         axios.get(import.meta.env.VITE_BACKEND_URL + "/products/").then((response) => {
             console.log(response.data);
             setProducts(response.data);
+            setLoaded(true);
          });
-   }, []);
+      }
+   }, [loaded]);
 
    return (
-      <div className="w-full max-full flex justify-center relative">
-         <table>
-            <thead>
-               <tr>
-                  <th>Image</th>
-                  <th>Product ID</th>
-                  <th>Name</th>
-                  <th>Price</th>
-                  <th>Labelled Price</th>
-                  <th>Category</th>
-                  <th>Brand</th>
-                  <th>Model</th>
-                  <th>Stock</th>
-                  <th>Availability</th>
-               </tr>
-            </thead>
-            <tbody>
-               {products.map((item, index) => {
-                  return (
-                     <tr key={index}>
-                        <td>
-                           <img src={item.images[0]} className="w-8 h-8" />
-                        </td>
-                        <td>{item.productID}</td>
-                        <td>{item.name}</td>
-                        <td>${item.price.toFixed(2)}</td>
-                        <td>${item.labelledPrice.toFixed(2)}</td>
-                        <td>{item.category}</td>
-                        <td>{item.brand}</td>
-                        <td>{item.model}</td>
-                        <td>{item.stock}</td>
-                        <td>
-                           {item.isAvailable ? "In Stock" : "Out of Stock"}
-                        </td>
-                        <td>
-                           <button
-                              onClick={() => {
-                                 const token = localStorage.getItem("token");
-                                 axios
-                                    .delete(
-                                       import.meta.env.VITE_BACKEND_URL +
-                                          "/products/" +
-                                          item.productID,
-                                       {
-                                          headers: {
-                                             Authorization: "Bearer " + token,
-                                          },
-                                       }
-                                    )
-                                    .then(() => {
-                                       toast.success(
-                                          "Product deleted successfully!"
-                                       );
-                                    });
-                              }}
-                              className="w-20 bg-red-600 text-white rounded cursor-pointer hover:bg-red-800">
-                              Delete
-                           </button>
-                        </td>
-                     </tr>
-                  );
-               })}
-            </tbody>
-         </table>
+      <div>
+         <div className="max-w-7xl mx-auto">
+            {/* Header Section */}
+            <div className="mb-8">
+               <h1 className="text-4xl font-bold text-gray-800 mb-2">Product Management</h1>
+               <p className="text-gray-600">Manage your inventory and products</p>
+            </div>
+
+            {/* Table Container */}
+            <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+               {loaded ? (
+                  <div className="overflow-x-auto">
+                     <table className="w-full">
+                        <thead className="bg-linear-to-b from-blue-400 to-blue-800">
+                           <tr>
+                              <th className="px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider">
+                                 Image
+                              </th>
+                              <th className="w-20 px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider">
+                                 Product ID
+                              </th>
+                              <th className="w-32px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider">
+                                 Name
+                              </th>
+                              <th className="px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider">
+                                 Price
+                              </th>
+                              <th className="px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider">
+                                 Labelled Price
+                              </th>
+                              <th className="px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider">
+                                 Category
+                              </th>
+                              <th className="px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider">
+                                 Brand
+                              </th>
+                              <th className="px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider">
+                                 Model
+                              </th>
+                              <th className="px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider">
+                                 Stock
+                              </th>
+                              <th className="px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider">
+                                 Availability
+                              </th>
+                              <th className="px-6 py-4 text-center text-xs font-semibold text-white uppercase tracking-wider">
+                                 Action
+                              </th>
+                           </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                           {products.map((item, index) => {
+                              return (
+                                 <tr key={index} className="hover:bg-gray-100 transition-colors duration-150">
+                                    <td className="px-6 py-4 text-center">
+                                       <img
+                                          src={item.images[0]}
+                                          className="w-12 h-12 rounded-lg object-cover shadow-sm border border-gray-200 mx-auto"
+                                          alt={item.name}
+                                       />
+                                    </td>
+                                    <td className="px-6 py-4 text-center text-sm font-medium text-gray-900">
+                                       {item.productID}
+                                    </td>
+                                    <td className="px-6 py-4 text-center text-sm text-gray-700 font-medium">
+                                       {item.name}
+                                    </td>
+                                    <td className="px-6 py-4 text-center text-sm font-semibold text-green-600">
+                                       ${item.price.toFixed(2)}
+                                    </td>
+                                    <td className="px-6 py-4 text-center text-sm text-gray-500 line-through">
+                                       ${item.labelledPrice.toFixed(2)}
+                                    </td>
+                                    <td className="px-6 py-4 text-center text-sm text-gray-700">
+                                       <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                                          {item.category}
+                                       </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-center text-sm text-gray-700">{item.brand}</td>
+                                    <td className="px-6 py-4 text-center text-sm text-gray-700">{item.model}</td>
+                                    <td className="px-6 py-4 text-center text-sm">
+                                       <span
+                                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                             item.stock > 10
+                                                ? "bg-green-100 text-green-800"
+                                                : item.stock > 0
+                                                ? "bg-yellow-100 text-yellow-800"
+                                                : "bg-red-100 text-red-800"
+                                          }`}>
+                                          {item.stock}
+                                       </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-center text-sm">
+                                       <span
+                                          className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                             item.isAvailable
+                                                ? "bg-green-100 text-green-800"
+                                                : "bg-red-100 text-red-800"
+                                          }`}>
+                                          {item.isAvailable ? "In Stock" : "Out of Stock"}
+                                       </span>
+                                    </td>
+                                    <td className="px-6 py-4 text-center text-sm">
+                                       <button
+                                          onClick={() => {
+                                             const token = localStorage.getItem("token");
+                                             axios
+                                                .delete(
+                                                   import.meta.env.VITE_BACKEND_URL + "/products/" + item.productID,
+                                                   {
+                                                      headers: {
+                                                         Authorization: "Bearer " + token,
+                                                      },
+                                                   }
+                                                )
+                                                .then(() => {
+                                                   toast.success("Product deleted successfully!");
+                                                   setLoaded(false);
+                                                });
+                                          }}
+                                          className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium transition-all duration-200 hover:bg-red-800 hover:shadow-md active:scale-95 cursor-pointer">
+                                          <FaTrashAlt />
+                                       </button>
+                                    </td>
+                                 </tr>
+                              );
+                           })}
+                        </tbody>
+                     </table>
+                  </div>
+               ) : (
+                  <Loader></Loader>
+               )}
+            </div>
+         </div>
+
+         {/* Floating Action Button */}
          <Link
             to="/admin/add-product"
-            className="fixed right-5 bottom-5 w-[50px] h-[50px] border-[2px] rounded-full flex justify-center items-center text-6xl hover:bg-accent hover:text-white ">
-            <BiPlus />
+            className="fixed right-8 bottom-8 w-12 h-12 bg-linear-to-br from-blue-400 to-blue-800 text-white rounded-full flex justify-center items-center text-4xl shadow-2xl hover:shadow-3xl hover:scale-110 transition-all duration-300 hover:from-blue-700 hover:to-blue-800 group">
+            <BiPlus className="group-hover:rotate-90 transition-transform duration-300" />
          </Link>
       </div>
    );
