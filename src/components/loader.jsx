@@ -1,6 +1,6 @@
 export default function Loader() {
    return (
-      <div className="w-full h-screen fixed top-0 left-0 bg-accent/45 justify-center items-center flex flex-col z-">
+      <div className="w-full h-screen fixed top-0 left-0 bg-accent/45 justify-center items-center flex flex-col z-50">
          {/* Spinner */}
          <div className="relative">
             <div className="w-16 h-16 border-4 border-accent/10 rounded-full"></div>

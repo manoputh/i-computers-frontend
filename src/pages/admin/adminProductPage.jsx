@@ -1,10 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { BiPlus } from "react-icons/bi";
-import { FaTrashAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import Loader from "../../components/loader";
+import ProductDeleteButton from "../../components/productDeleteButton";
 
 export default function AdminProductPage() {
    const [products, setProducts] = useState([]);
@@ -12,11 +11,18 @@ export default function AdminProductPage() {
 
    useEffect(() => {
       if (!loaded) {
-         axios.get(import.meta.env.VITE_BACKEND_URL + "/products/").then((response) => {
-            console.log(response.data);
-            setProducts(response.data);
-            setLoaded(true);
-         });
+         const token = localStorage.getItem("token");
+
+         axios
+            .get(import.meta.env.VITE_BACKEND_URL + "/products/", {
+               headers: {
+                  Authorization: "Bearer " + token,
+               },
+            })
+            .then((response) => {
+               setProducts(response.data);
+               setLoaded(true);
+            });
       }
    }, [loaded]);
 
@@ -123,27 +129,13 @@ export default function AdminProductPage() {
                                           {item.isAvailable ? "In Stock" : "Out of Stock"}
                                        </span>
                                     </td>
-                                    <td className="px-6 py-4 text-center text-sm">
-                                       <button
-                                          onClick={() => {
-                                             const token = localStorage.getItem("token");
-                                             axios
-                                                .delete(
-                                                   import.meta.env.VITE_BACKEND_URL + "/products/" + item.productID,
-                                                   {
-                                                      headers: {
-                                                         Authorization: "Bearer " + token,
-                                                      },
-                                                   }
-                                                )
-                                                .then(() => {
-                                                   toast.success("Product deleted successfully!");
-                                                   setLoaded(false);
-                                                });
+                                    <td className="px-6 py-4 text-sm">
+                                       <ProductDeleteButton
+                                          productID={item.productID}
+                                          reload={() => {
+                                             setLoaded(false);
                                           }}
-                                          className="px-4 py-2 bg-red-600 text-white rounded-lg font-medium transition-all duration-200 hover:bg-red-800 hover:shadow-md active:scale-95 cursor-pointer">
-                                          <FaTrashAlt />
-                                       </button>
+                                       />
                                     </td>
                                  </tr>
                               );
