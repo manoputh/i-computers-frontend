@@ -18,13 +18,23 @@ export default function AdminAddProductPage() {
    const [model, setModel] = useState("");
    const [stock, setStock] = useState(0);
    const [isAvailable, setIsAvailable] = useState(false);
+   const [isSubmitting, setIsSubmitting] = useState(false);
    const navigate = useNavigate();
 
    async function addProduct() {
+      if (isSubmitting) return;
+
+      if (!productID || !name || !description || !category || !price) {
+         toast.error("Please fill in all required fields.");
+         setIsSubmitting(false);
+         return;
+      }
+      setIsSubmitting(true);
       const token = localStorage.getItem("token");
       if (token == null) {
          toast.error("You must be logged in as admin to add products.");
          navigate("/login");
+         setIsSubmitting(false);
          return;
       }
 
@@ -38,13 +48,9 @@ export default function AdminAddProductPage() {
       const images = await Promise.all(imagePromises).catch((error) => {
          toast.error("Image upload failed: ");
          console.error(error);
+         setIsSubmitting(false);
          return;
       });
-
-      if (!productID || !name || !description || !category || !price) {
-         toast.error("Please fill in all required fields.");
-         return;
-      }
 
       try {
          const altNamesArray = altNames.split(",");
@@ -74,6 +80,8 @@ export default function AdminAddProductPage() {
          navigate("/admin/products");
       } catch (error) {
          toast.error("Failed to add product. Please try again.");
+      } finally {
+         setIsSubmitting(false);
       }
    }
 
@@ -237,8 +245,22 @@ export default function AdminAddProductPage() {
 
                <button
                   onClick={addProduct}
-                  className="w-[49%] h-12 bg-accent text-white font-bold rounded-2xl mt-5 hover:bg-accent/80  flex justify-center items-center text-center">
-                  Add Product
+                  disabled={isSubmitting}
+                  className={`w-[49%] h-12 bg-accent text-white font-bold rounded-2xl mt-5 flex justify-center items-center text-center transition cursor-pointer ${
+                     isSubmitting ? "opacity-80 cursor-not-allowed" : "hover:bg-accent/80"
+                  }`}>
+                  {isSubmitting ? (
+                     <span className="flex items-center gap-2 animate-pulse">
+                        Adding product
+                        <span className="flex gap-1">
+                           <span className="w-1.5 h-1.5 rounded-full bg-white animate-bounce [animation-delay:-0.2s]" />
+                           <span className="w-1.5 h-1.5 rounded-full bg-white animate-bounce [animation-delay:-0.05s]" />
+                           <span className="w-1.5 h-1.5 rounded-full bg-white animate-bounce [animation-delay:0.1s]" />
+                        </span>
+                     </span>
+                  ) : (
+                     "Add Product"
+                  )}
                </button>
             </div>
          </div>

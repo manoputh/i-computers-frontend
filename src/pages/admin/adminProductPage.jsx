@@ -129,13 +129,21 @@ export default function AdminProductPage() {
                                           {item.isAvailable ? "In Stock" : "Out of Stock"}
                                        </span>
                                     </td>
-                                    <td className="px-6 py-4 text-sm">
-                                       <ProductDeleteButton
-                                          productID={item.productID}
-                                          reload={() => {
-                                             setLoaded(false);
-                                          }}
-                                       />
+                                    <td className="px-6 py-4 text-sm gap-2">
+                                       <div className="flex justify-center items-center gap-2">
+                                          <Link
+                                             to="/admin/update-product"
+                                             className="bg-gray-500 hover:bg-gray-700 text-white font-semibold px-4 py-2 rounded-md transition duration-300 cursor-pointer"
+                                             state={item}>
+                                             Update
+                                          </Link>
+                                          <ProductDeleteButton
+                                             productID={item.productID}
+                                             reload={() => {
+                                                setLoaded(false);
+                                             }}
+                                          />
+                                       </div>
                                     </td>
                                  </tr>
                               );

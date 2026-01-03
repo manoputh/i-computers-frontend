@@ -35,7 +35,7 @@ export default function ProductDeleteButton(props) {
          <button
             onClick={() => setIsMessageOpen(true)}
             className="bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-md transition duration-300 cursor-pointer">
-            Delete Product
+            Delete
          </button>
          {isMessageOpen && (
             <div className="w-screen h-screen fixed top-0 left-0 bg-black/50 flex justify-center items-center">
