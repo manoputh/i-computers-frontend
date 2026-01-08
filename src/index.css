@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-   --color-primary: #def9ff;
+   --color-primary: #cad5e2;
    --color-secondary: #202020;
    --color-accent: #0f172a;
    --color-gold: #fcd64f;
@@ -10,6 +10,7 @@
 /* Width */
 ::-webkit-scrollbar {
    width: 4px;
+   height: 4px;
 }
 
 /* Track */
