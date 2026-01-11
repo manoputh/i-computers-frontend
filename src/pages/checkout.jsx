@@ -1,20 +1,35 @@
 import { useState } from "react";
-import { addToCart, getCart, getCartTotal } from "../utils/cart";
 import { PiCaretCircleDownFill, PiCaretCircleUpFill } from "react-icons/pi";
-import { Link } from "react-router-dom";
-import { MdOutlineShoppingCart } from "react-icons/md";
+import { FaCartShopping } from "react-icons/fa6";
+import { useLocation, useNavigate } from "react-router-dom";
+import { MdOutlineShoppingCartCheckout } from "react-icons/md";
 
 // ...existing code...
-export default function CartPage() {
-   const [cart, setCart] = useState(getCart());
+export default function CheckoutPage() {
+   const location = useLocation();
+   const navigate = useNavigate();
+
+   const [cart, setCart] = useState(location.state);
+
+   if (location.state == null) {
+      navigate("/products");
+   }
+
+   function getCartTotal() {
+      let total = 0;
+      cart.forEach((item) => {
+         total += item.price * item.quantity;
+      });
+      return total;
+   }
 
    return (
       <div className="min-h-[70vh] w-full flex flex-col items-center bg-primary">
          <div className="w-full max-w-3xl px-5 pt-10 pb-6 flex flex-col gap-6">
             <div className="flex items-center justify-between">
                <h1 className="flex items-center text-3xl font-bold text-slate-900 gap-2">
-                  <MdOutlineShoppingCart />
-                  Your Cart
+                  <MdOutlineShoppingCartCheckout />
+                  Checkout
                </h1>
                <span className="text-sm text-slate-500">
                   {cart.length} item{cart.length !== 1 && "s"}
@@ -28,7 +43,7 @@ export default function CartPage() {
             )}
 
             <div className="flex flex-col gap-4">
-               {cart.map((item) => (
+               {cart.map((item, index) => (
                   <div
                      key={item.productID}
                      className="w-full h-28 rounded-xl bg-slate-100 shadow-sm overflow-hidden flex items-center">
@@ -61,8 +76,9 @@ export default function CartPage() {
                         <div className="h-10 w-25 rounded-3xl flex flex-row justify-center items-center bg-primary gap-1">
                            <PiCaretCircleUpFill
                               onClick={() => {
-                                 addToCart(item, 1);
-                                 setCart(getCart());
+                                 const copiedCart = [...cart];
+                                 copiedCart[index].quantity += 1;
+                                 setCart(copiedCart);
                               }}
                               className="cursor-pointer text-slate-600 hover:text-slate-950"
                               size={30}
@@ -70,8 +86,12 @@ export default function CartPage() {
                            <span className="w-[20px] text-sm text-slate-600 text-center">{item.quantity}</span>
                            <PiCaretCircleDownFill
                               onClick={() => {
-                                 addToCart(item, -1);
-                                 setCart(getCart());
+                                 const copiedCart = [...cart];
+                                 copiedCart[index].quantity -= 1;
+                                 if (copiedCart[index].quantity <= 0) {
+                                    copiedCart.splice(index, 1);
+                                 }
+                                 setCart(copiedCart);
                               }}
                               className="cursor-pointer text-slate-600 hover:text-slate-900"
                               size={30}
@@ -87,12 +107,9 @@ export default function CartPage() {
                   <span className="block text-right p-3 text-xl font-bold text-slate-900 text-shadow-lg">
                      Total: LKR. {getCartTotal().toFixed(2)}
                   </span>
-                  <Link
-                     to="/checkout"
-                     className="w-full h-12 bg-accent/30 hover:bg-accent text-accent hover:text-white cursor-pointer font-bold text-lg rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
-                     state={cart}>
-                     Proceed to Checkout
-                  </Link>
+                  <button className="w-full h-12 bg-accent/30 hover:bg-accent text-accent hover:text-white cursor-pointer font-bold text-lg rounded-lg transition-all duration-200 flex items-center justify-center gap-2">
+                     Order Now
+                  </button>
                </div>
             </div>
          </div>

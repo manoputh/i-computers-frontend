@@ -1,13 +1,14 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Loader from "../components/loader";
 import ImageSlider from "../components/imageSlider";
 import { CgChevronRight } from "react-icons/cg";
 import { addToCart, emptyCart, getCart } from "../utils/cart";
 
 export default function ProductOverview() {
+   const navigate = useNavigate();
    const params = useParams();
    const [product, setProduct] = useState(null);
    const [status, setStatus] = useState("loading");
@@ -85,13 +86,6 @@ export default function ProductOverview() {
                      <div className="flex flex-col sm:flex-row gap-4 pt-4">
                         <button
                            onClick={() => {
-                              emptyCart();
-                           }}
-                           className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                           Empty
-                        </button>
-                        <button
-                           onClick={() => {
                               addToCart(product, 1);
                            }}
                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-8 rounded-xl transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
@@ -99,7 +93,18 @@ export default function ProductOverview() {
                         </button>
                         <button
                            onClick={() => {
-                              console.log(getCart());
+                              navigate("/checkout", {
+                                 state: [
+                                    {
+                                       productID: product.productID,
+                                       name: product.name,
+                                       price: product.price,
+                                       labelledPrice: product.labelledPrice,
+                                       image: product.images[0],
+                                       quantity: 1,
+                                    },
+                                 ],
+                              });
                            }}
                            className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-4 px-8 rounded-xl transition-all duration-200">
                            Buy Now
