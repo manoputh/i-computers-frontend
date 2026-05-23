@@ -3,11 +3,16 @@ import { PiCaretCircleDownFill, PiCaretCircleUpFill } from "react-icons/pi";
 import { FaCartShopping } from "react-icons/fa6";
 import { useLocation, useNavigate } from "react-router-dom";
 import { MdOutlineShoppingCartCheckout } from "react-icons/md";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 // ...existing code...
 export default function CheckoutPage() {
    const location = useLocation();
    const navigate = useNavigate();
+   const [name, setName] = useState("");
+   const [address, setAddress] = useState("");
+   const [phone, setPhone] = useState("");
 
    const [cart, setCart] = useState(location.state);
 
@@ -21,6 +26,45 @@ export default function CheckoutPage() {
          total += item.price * item.quantity;
       });
       return total;
+   }
+
+   function submitOrder() {
+      const token = localStorage.getItem("token");
+      if (token == null) {
+         toast.error("You must be logged in to place an order");
+         return;
+      }
+
+      const orderItems = [];
+      cart.forEach((item) => {
+         orderItems.push({
+            productID: item.productID,
+            quantity: item.quantity,
+         });
+      });
+
+      axios
+         .post(
+            import.meta.env.VITE_BACKEND_URL + "/orders",
+            {
+               name: name,
+               address: address,
+               phone: phone,
+               items: orderItems,
+            },
+            {
+               headers: {
+                  Authorization: `Bearer ${token}`,
+               },
+            },
+         )
+         .then(() => {
+            toast.success("Order placed successfully");
+            navigate("/products");
+         })
+         .catch(() => {
+            toast.error("Failed to place order");
+         });
    }
 
    return (
@@ -103,13 +147,41 @@ export default function CheckoutPage() {
                      </div>
                   </div>
                ))}
-               <div className="w-full h-[100px]">
-                  <span className="block text-right p-3 text-xl font-bold text-slate-900 text-shadow-lg">
-                     Total: LKR. {getCartTotal().toFixed(2)}
-                  </span>
-                  <button className="w-full h-12 bg-accent/30 hover:bg-accent text-accent hover:text-white cursor-pointer font-bold text-lg rounded-lg transition-all duration-200 flex items-center justify-center gap-2">
+
+               <div className="w-full h-[200px] flex flex-col p-2 gap-2">
+                  <h1>Delivery Details:</h1>
+                  <input
+                     type="text"
+                     placeholder="Full Name"
+                     value={name}
+                     onChange={(e) => setName(e.target.value)}
+                     className="p-2 rounded-lg border border-slate-400 focus:outline-none focus:ring-2 focus:ring-accent"
+                  />
+                  <textarea
+                     type="text"
+                     placeholder="Address"
+                     value={address}
+                     onChange={(e) => setAddress(e.target.value)}
+                     className="p-2 rounded-lg border border-slate-400 focus:outline-none focus:ring-2 focus:ring-accent"
+                  />
+                  <input
+                     type="text"
+                     placeholder="Phone Number"
+                     value={phone}
+                     onChange={(e) => setPhone(e.target.value)}
+                     className="p-2 rounded-lg border border-slate-400 focus:outline-none focus:ring-2 focus:ring-accent"
+                  />
+               </div>
+
+               <div className="w-full h-[50px] flex justify-between items-center">
+                  <button
+                     onClick={submitOrder}
+                     className="w-[40%] h-12 bg-accent/20 hover:bg-accent text-accent hover:text-white cursor-pointer font-bold text-lg rounded-lg transition-all duration-200 flex items-center justify-center gap-2">
                      Order Now
                   </button>
+                  <span className="text-right p-3 text-xl font-bold text-slate-900">
+                     Total: LKR. {getCartTotal().toFixed(2)}
+                  </span>
                </div>
             </div>
          </div>
